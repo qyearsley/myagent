@@ -1,15 +1,7 @@
 import os
 
 from config import MAX_CHARS
-
-
-def log_errors(func):
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except Exception as e:
-            print(f'  Error: {e}')
-    return wrapper
+from functions.helpers import log_errors
 
 
 @log_errors

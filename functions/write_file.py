@@ -1,14 +1,6 @@
 import os
 
-
-def log_errors(func):
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except Exception as e:
-            print(f'  Error: {e}')
-    return wrapper
-
+from functions.helpers import log_errors
 
 @log_errors
 def write_file(working_directory, file_path, content):

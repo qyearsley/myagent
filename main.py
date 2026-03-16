@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
+import prompts
+
 
 def main():
     parser = argparse.ArgumentParser(description="Chatbot")
@@ -25,8 +27,15 @@ def main():
         print(f"User prompt: {args.user_prompt}")
     messages = [types.Content(role="user", parts=[types.Part(text=args.user_prompt)])]
 
+    model_name="gemini-2.5-flash"
+    config = types.GenerateContentConfig(
+        system_instruction=prompts.system_prompt,
+        temperature=0)
+
     response = client.models.generate_content(
-        model="gemini-2.5-flash", contents=messages
+        model=model_name,
+        contents=messages,
+        config=config
     )
 
     metadata = response.usage_metadata
