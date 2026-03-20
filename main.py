@@ -10,6 +10,8 @@ from google.genai import types
 
 import prompts
 
+from functions.get_files_info import schema_get_files_info
+
 
 def main():
     parser = argparse.ArgumentParser(description="Chatbot")
@@ -27,15 +29,18 @@ def main():
         print(f"User prompt: {args.user_prompt}")
     messages = [types.Content(role="user", parts=[types.Part(text=args.user_prompt)])]
 
-    model_name="gemini-2.5-flash"
+    model_name = "gemini-2.5-flash"
+    available_functions = types.Tool(
+        function_declarations=[schema_get_files_info],
+    )
     config = types.GenerateContentConfig(
+        tools=[available_functions],
         system_instruction=prompts.system_prompt,
-        temperature=0)
+        temperature=0.5,
+    )
 
     response = client.models.generate_content(
-        model=model_name,
-        contents=messages,
-        config=config
+        model=model_name, contents=messages, config=config
     )
 
     metadata = response.usage_metadata
@@ -49,7 +54,12 @@ def main():
         print(f"Response tokens: {response_tokens}")
     if not response:
         raise RuntimeError("generate_content no response")
-    print(response.text)
+
+    if response.function_calls:
+        for fc in response.function_calls:
+            print(f"Calling function: {fc.name}({fc.args})")
+    else:
+        print(response.text)
 
 
 if __name__ == "__main__":

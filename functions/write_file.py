@@ -2,6 +2,7 @@ import os
 
 from functions.helpers import log_errors
 
+
 @log_errors
 def write_file(working_directory, file_path, content):
     working_dir_abs = os.path.abspath(working_directory)
@@ -10,8 +11,10 @@ def write_file(working_directory, file_path, content):
         os.path.commonpath([working_dir_abs, target_path]) == working_dir_abs
     )
     if not valid_target_path:
-        raise Exception(f'Cannot write to "{file_path}" as it is outside the permitted working directory')
-    if (os.path.isdir(target_path)):
+        raise Exception(
+            f'Cannot write to "{file_path}" as it is outside the permitted working directory'
+        )
+    if os.path.isdir(target_path):
         raise Exception(f'Cannot write to "{file_path}" as it is a directory')
     # Make sure that all parent directories of the file_path exist.
     parent_dir = os.path.dirname(target_path)

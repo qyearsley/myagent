@@ -3,5 +3,6 @@ def log_errors(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            print(f'  Error: {e}')
+            print(f"  Error: {e}")
+
     return wrapper
