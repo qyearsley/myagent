@@ -1,5 +1,7 @@
 import os
 
+from google.genai import types
+
 from functions.helpers import log_errors
 
 
@@ -22,3 +24,22 @@ def write_file(working_directory, file_path, content):
     fd = open(target_path, "w")
     fd.write(content)
     print(f'Successfully wrote to "{file_path}" ({len(content)} characters written)')
+
+
+schema_write_file = types.FunctionDeclaration(
+    name="write_file",
+    description="Runs a Python script, printing stdout and stderr if there is any, and ret code if non-zero",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="Path of regular file to write",
+            ),
+            "content": types.Schema(
+                type=types.Type.STRING,
+                description="File content to write",
+            ),
+        },
+    ),
+)

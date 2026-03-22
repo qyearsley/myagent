@@ -1,5 +1,7 @@
 import os
 
+from google.genai import types
+
 from config import MAX_CHARS
 from functions.helpers import log_errors
 
@@ -22,3 +24,18 @@ def get_file_content(working_directory, file_path):
     if fd.read(1):
         content += f'[...File "{file_path}" truncated at {MAX_CHARS} characters]'
     print(content)
+
+
+schema_get_file_content = types.FunctionDeclaration(
+    name="get_file_content",
+    description="Prints the content of a regular file, truncating if it is very large",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="File path to read, relative to the working directory",
+            ),
+        },
+    ),
+)

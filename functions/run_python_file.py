@@ -1,8 +1,10 @@
 import os
 import subprocess
 
+from google.genai import types
 
-def log_errors(func):
+
+def log_errors_python(func):
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
@@ -12,7 +14,7 @@ def log_errors(func):
     return wrapper
 
 
-@log_errors
+@log_errors_python
 def run_python_file(working_directory, file_path, args=None):
     working_dir_abs = os.path.abspath(working_directory)
     target_path = os.path.normpath(os.path.join(working_dir_abs, file_path))
@@ -42,3 +44,23 @@ def run_python_file(working_directory, file_path, args=None):
     print(result.stdout)
     print("STDERR:")
     print(result.stderr)
+
+
+schema_run_python_file = types.FunctionDeclaration(
+    name="run_python_file",
+    description="Runs a Python script, printing stdout and stderr if there is any, and ret code if non-zero",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="Path of Python script file to run",
+            ),
+            "args": types.Schema(
+                type=types.Type.ARRAY,
+                items=types.Schema(type=types.Type.STRING),
+                description="Optional arg, list of args to pass to the Python script",
+            ),
+        },
+    ),
+)

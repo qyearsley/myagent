@@ -10,7 +10,7 @@ from google.genai import types
 
 import prompts
 
-from functions.get_files_info import schema_get_files_info
+from call_function import list_functions, call_function
 
 
 def main():
@@ -30,9 +30,10 @@ def main():
     messages = [types.Content(role="user", parts=[types.Part(text=args.user_prompt)])]
 
     model_name = "gemini-2.5-flash"
-    available_functions = types.Tool(
-        function_declarations=[schema_get_files_info],
-    )
+
+    # Register our tool schemas with the model so it knows what functions it
+    # can call and what arguments they accept (see each schema_* declaration).
+    available_functions = types.Tool(function_declarations=list_functions())
     config = types.GenerateContentConfig(
         tools=[available_functions],
         system_instruction=prompts.system_prompt,
@@ -55,9 +56,24 @@ def main():
     if not response:
         raise RuntimeError("generate_content no response")
 
+    # The model can either respond with plain text OR request function calls.
+    # When it returns function_calls, it's asking the agent to execute tools
+    # on its behalf -- this is the core of the "agentic" pattern.
     if response.function_calls:
+        results = []
         for fc in response.function_calls:
-            print(f"Calling function: {fc.name}({fc.args})")
+            #print(f"Calling function: {fc.name}({fc.args})")
+            function_call_result = call_function(fc, verbose=args.verbose)
+            if not function_call_result.parts:
+                raise Exception("Function call result has no parts")
+            fr = function_call_result.parts[0].function_response
+            if fr is None:
+                raise Exception("Function response is None")
+            if fr.response is None:
+                raise Exception("Function response has no response")
+            results.append(function_call_result.parts[0])
+            if args.verbose:
+                print(f"-> {fr.response}")
     else:
         print(response.text)
 
