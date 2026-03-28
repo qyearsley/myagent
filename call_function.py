@@ -5,6 +5,8 @@ from functions.write_file import schema_write_file, write_file
 
 from google.genai import types
 
+from config import WORKING_DIRECTORY
+
 def call_function(function_call, verbose=False):
     """Dispatch a model-requested function call to the actual Python implementation.
 
@@ -33,7 +35,7 @@ def call_function(function_call, verbose=False):
     args = dict(function_call.args) if function_call.args else {}
     # Sandbox: every tool operates within a fixed working directory so the
     # model can't access files outside the permitted area.
-    args["working_directory"] = "./calculator"
+    args["working_directory"] = WORKING_DIRECTORY
 
     function_result = mapping[function_name](**args)
 
