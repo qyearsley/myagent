@@ -1,9 +1,8 @@
 import os
-import subprocess
 
 from google.genai import types
 
-from functions.helpers import log_errors, validate_path
+from functions.helpers import log_errors, validate_path, run_subprocess
 
 
 @log_errors
@@ -13,21 +12,10 @@ def run_python_file(working_directory, file_path, args=None):
         raise Exception(f'"{file_path}" does not exist or is not a regular file')
     if not target_path.endswith(".py"):
         raise Exception(f'"{file_path}" is not a Python file')
-    command = ["python", target_path]
+    command = ["python3", target_path]
     if args:
         command.extend(args)
-    result = subprocess.run(
-        command, capture_output=True, cwd=os.path.abspath(working_directory), text=True, timeout=30
-    )
-    output = ""
-    if result.returncode != 0:
-        output += f"Process exited with code {result.returncode}\n"
-    if not result.stdout and not result.stderr:
-        output += "No output produced.\n"
-        return
-    output += "STDOUT:\n" + result.stdout + "STDERR:\n" + result.stderr
-
-    return output
+    return run_subprocess(command, cwd=working_directory)
 
 
 schema_run_python_file = types.FunctionDeclaration(

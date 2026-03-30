@@ -3,6 +3,7 @@
 # accessing files outside the permitted area via path traversal (e.g. "../../").
 
 import os
+import subprocess
 
 
 def log_errors(func):
@@ -27,3 +28,25 @@ def validate_path(working_directory, path):
             f'Cannot access "{path}" as it is outside the permitted working directory'
         )
     return target_path
+
+
+def run_subprocess(command, cwd, timeout=30, shell=False):
+    """Run a command and return formatted output (stdout, stderr, exit code).
+
+    Shared by run_python_file and run_bash_command — both need the same
+    subprocess invocation and output formatting logic.
+    """
+    result = subprocess.run(
+        command, shell=shell, capture_output=True,
+        cwd=os.path.abspath(cwd), text=True, timeout=timeout,
+    )
+    output = ""
+    if result.returncode != 0:
+        output += f"Process exited with code {result.returncode}\n"
+    if result.stdout:
+        output += "STDOUT:\n" + result.stdout
+    if result.stderr:
+        output += "STDERR:\n" + result.stderr
+    if not output:
+        output = "No output produced."
+    return output
