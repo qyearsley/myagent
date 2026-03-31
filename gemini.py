@@ -15,10 +15,11 @@ from google.genai.types import GenerateContentConfig, GenerateContentResponse, T
 import prompts
 from call_function import list_functions
 
-MODEL_NAME = "gemini-2.5-flash"
+DEFAULT_MODEL = "gemini-2.5-flash"
 
 
 def create_client() -> genai.Client:
+    """Initialize the Gemini client, loading the API key from environment variables."""
     load_dotenv()
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:

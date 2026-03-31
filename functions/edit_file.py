@@ -6,7 +6,14 @@ from functions.helpers import log_errors, validate_path
 
 
 @log_errors
-def edit_file(working_directory, file_path, old_string, new_string):
+def edit_file(working_directory: str, file_path: str, old_string: str, new_string: str) -> str:
+    """Replace a specific string in a file with a new string.
+
+    This is the "surgical edit" tool — instead of rewriting the whole file,
+    it finds exactly one occurrence of old_string and replaces it.  This is
+    how real coding agents make targeted changes without touching the rest
+    of the file.  Errors if old_string is not found or appears more than once.
+    """
     """Replace a specific string in a file with a new string.
 
     This is the "surgical edit" tool — instead of rewriting the whole file,

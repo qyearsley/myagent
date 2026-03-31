@@ -7,7 +7,19 @@ from functions.helpers import log_errors, validate_path
 
 
 @log_errors
-def get_file_content(working_directory, file_path):
+def get_file_content(working_directory: str, file_path: str) -> str:
+    """Reads the content of a file, truncating it if it exceeds MAX_CHARS.
+
+    Args:
+        working_directory: The agent's current working directory.
+        file_path: The path to the file to read, relative to the working directory.
+
+    Returns:
+        The content of the file, truncated if necessary.
+
+    Raises:
+        Exception: If the file is not found or is not a regular file.
+    """
     target_path = validate_path(working_directory, file_path)
     if not os.path.isfile(target_path):
         raise Exception(f'File not found or is not a regular file: "{file_path}"')

@@ -9,6 +9,7 @@ import subprocess
 def log_errors(func):
     """Decorator that catches exceptions in tool functions and prints them
     instead of crashing, so the agent can report the error to the model."""
+
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
@@ -37,8 +38,12 @@ def run_subprocess(command, cwd, timeout=30, shell=False):
     subprocess invocation and output formatting logic.
     """
     result = subprocess.run(
-        command, shell=shell, capture_output=True,
-        cwd=os.path.abspath(cwd), text=True, timeout=timeout,
+        command,
+        shell=shell,
+        capture_output=True,
+        cwd=os.path.abspath(cwd),
+        text=True,
+        timeout=timeout,
     )
     output = ""
     if result.returncode != 0:
