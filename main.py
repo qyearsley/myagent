@@ -207,12 +207,10 @@ def get_function_call_results(
         # bundle all function-response Parts into a single Content message.
         results.append(function_call_result.parts[0])
         if verbose:
-            # Show a truncated preview of the result so the user can see what
-            # the model will receive, without flooding the terminal.
+            # In verbose mode, also show the raw result size and preview
+            # (the concise summary is already printed by call_function).
             result_str = str(fr.response.get("result", fr.response))
-            if len(result_str) > 200:
-                result_str = result_str[:200] + "..."
-            print(f"    -> ({len(str(fr.response))} chars) {result_str}")
+            print(f"    [verbose: {len(result_str)} chars]")
     return results
 
 

@@ -13,11 +13,18 @@ from functions.write_file import schema_write_file, write_file
 
 
 def _truncate(s, max_len=60):
-    """Truncate a string for display, adding ellipsis if needed."""
-    s = s.replace("\n", "\\n")
-    if len(s) > max_len:
-        return s[:max_len] + "..."
-    return s
+    """Truncate a string for display, adding ellipsis if needed.
+
+    Multi-line strings show only the first line with a count of remaining lines,
+    which is more readable than showing literal \\n characters.
+    """
+    lines = s.split("\n")
+    first_line = lines[0]
+    if len(lines) > 1:
+        first_line += f" (+{len(lines) - 1} lines)"
+    if len(first_line) > max_len:
+        return first_line[:max_len] + "..."
+    return first_line
 
 
 def describe_call(name, args):
@@ -58,9 +65,44 @@ def describe_call(name, args):
 
 
 def confirm():
-    """Prompt the user to approve a mutating action. Default is yes."""
-    answer = input(f"  Allow? [Y/n] ").strip().lower()
-    return answer in ("", "y", "yes")
+    """Prompt the user to approve a mutating action. Default is yes.
+
+    On denial, asks what the user wants instead so the model can adjust
+    rather than blindly retrying or moving on.
+
+    Returns (allowed, feedback) — feedback is None when allowed or when
+    the user provides no alternative.
+    """
+    answer = input("  Allow? [Y/n] ").strip().lower()
+    if answer in ("", "y", "yes"):
+        return True, None
+    feedback = input("  What should I do instead? (Enter to skip) ").strip()
+    return False, feedback if feedback else None
+
+
+def summarize_result(name, result):
+    """Return a brief one-line summary of a tool call's result."""
+    if not isinstance(result, str):
+        result = str(result)
+    first_line = result.split("\n")[0]
+    total_lines = result.count("\n") + 1
+    if first_line.startswith("Error"):
+        return first_line
+    match name:
+        case "get_file_content":
+            return f"{total_lines} lines"
+        case "get_files_info":
+            return f"{total_lines} items"
+        case "search_files":
+            return f"{total_lines} matches" if total_lines > 1 else first_line
+        case "edit_file" | "write_file":
+            return first_line
+        case "run_bash_command" | "run_python_file":
+            if total_lines > 1:
+                return f"{first_line} (+{total_lines - 1} lines)"
+            return first_line
+        case _:
+            return _truncate(result)
 
 
 # Tools that modify state require user confirmation before running.
@@ -95,13 +137,17 @@ def call_function(function_call, verbose=False, auto_confirm=False):
 
     # Ask for confirmation before mutating actions.
     if function_name in NEEDS_CONFIRMATION and not auto_confirm:
-        if not confirm():
+        allowed, feedback = confirm()
+        if not allowed:
+            denial_msg = "User denied this action."
+            if feedback:
+                denial_msg += f" User feedback: {feedback}"
             return Content(
                 role="tool",
                 parts=[
                     Part.from_function_response(
                         name=function_name,
-                        response={"result": "User denied this action."},
+                        response={"result": denial_msg},
                     )
                 ],
             )
@@ -111,6 +157,10 @@ def call_function(function_call, verbose=False, auto_confirm=False):
     args["working_directory"] = config.WORKING_DIRECTORY
 
     function_result = mapping[function_name](**args)
+
+    # Always show a brief summary of what the tool returned.
+    summary = summarize_result(function_name, function_result)
+    print(f"    -> {summary}")
 
     # Return the result as a "tool" role message -- this is the Gemini API's
     # format for feeding function outputs back into the conversation.
