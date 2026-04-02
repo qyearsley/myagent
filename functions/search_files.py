@@ -17,12 +17,6 @@ def search_files(working_directory: str, pattern: str, path: str = ".") -> str:
     Returns matching lines in file:line_number:content format, capped at
     MAX_RESULTS to avoid flooding the model's context.
     """
-    """Search for a text pattern across files in the working directory.
-
-    Walks the file tree, skipping binary files and common noise directories.
-    Returns matching lines in file:line_number:content format, capped at
-    MAX_RESULTS to avoid flooding the model's context.
-    """
     search_dir = validate_path(working_directory, path)
     if not os.path.isdir(search_dir):
         raise Exception(f'"{path}" is not a directory')

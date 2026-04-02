@@ -2,7 +2,7 @@
 
 A minimal AI coding agent that demonstrates the **agentic loop** pattern: the LLM can call tools (read files, edit code, run commands), see the results, and iterate until the task is done.
 
-Built with Python and the Gemini API. Intended as a learning project — small enough to read end-to-end, complete enough to actually use.
+Built with Python and the Gemini API as a course project for [boot.dev](https://www.boot.dev/). Small enough to read end-to-end, complete enough to actually use.
 
 ## How It Works
 
