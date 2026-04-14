@@ -9,6 +9,10 @@ wheels/
 # Virtual environments
 .venv
 
-.env
+.env*
+*.key
+*.pem
+*.p12
+credentials*.json
 .ruff_cache/
 .DS_Store
