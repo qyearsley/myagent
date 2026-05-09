@@ -2,6 +2,7 @@
 # working directory using os.path.commonpath. This prevents the model from
 # accessing files outside the permitted area via path traversal (e.g. "../../").
 
+import functools
 import os
 import subprocess
 
@@ -10,6 +11,7 @@ def log_errors(func):
     """Decorator that catches exceptions in tool functions and prints them
     instead of crashing, so the agent can report the error to the model."""
 
+    @functools.wraps(func)
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
@@ -37,14 +39,17 @@ def run_subprocess(command, cwd, timeout=30, shell=False):
     Shared by run_python_file and run_bash_command — both need the same
     subprocess invocation and output formatting logic.
     """
-    result = subprocess.run(
-        command,
-        shell=shell,
-        capture_output=True,
-        cwd=os.path.abspath(cwd),
-        text=True,
-        timeout=timeout,
-    )
+    try:
+        result = subprocess.run(
+            command,
+            shell=shell,
+            capture_output=True,
+            cwd=os.path.abspath(cwd),
+            text=True,
+            timeout=timeout,
+        )
+    except subprocess.TimeoutExpired:
+        return f"Error: command timed out after {timeout} seconds"
     output = ""
     if result.returncode != 0:
         output += f"Process exited with code {result.returncode}\n"

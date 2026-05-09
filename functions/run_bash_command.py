@@ -4,7 +4,7 @@ from functions.helpers import log_errors, run_subprocess
 
 
 @log_errors
-def run_bash_command(working_directory, command):
+def run_bash_command(working_directory: str, command: str) -> str:
     """Run a shell command in the working directory and return its output.
 
     NOTE: Unlike other tools, this doesn't use validate_path because it takes

@@ -6,7 +6,7 @@ from functions.helpers import log_errors, validate_path
 
 
 @log_errors
-def get_files_info(working_directory, directory="."):
+def get_files_info(working_directory: str, directory: str = ".") -> str:
     target_dir = validate_path(working_directory, directory)
     output = "Result for current directory:\n"
     if not os.path.isdir(target_dir):

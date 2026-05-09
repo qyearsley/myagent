@@ -47,7 +47,7 @@ python3 main.py                            # interactive REPL
 python3 main.py "find and fix the bug"     # single-shot
 python3 main.py -d ./myproject "run tests" # point at a directory
 python3 main.py -m gemini-2.5-pro "..."    # use a different model
-python3 main.py --verbose --yes "..."      # verbose + auto-confirm
+python3 main.py -vy "..."                  # verbose + auto-confirm
 ```
 
 ## Project Structure
@@ -58,6 +58,7 @@ gemini.py         – Gemini API client setup
 call_function.py  – Tool dispatch and confirmation flow
 prompts.py        – System prompt
 config.py         – Defaults (max iterations, max file chars)
+pyproject.toml    – Project metadata and dependencies
 functions/        – Tool implementations
   helpers.py      – Path validation, subprocess runner, error handling
   search_files.py, get_file_content.py, edit_file.py, ...

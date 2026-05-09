@@ -14,7 +14,8 @@ import argparse
 import os
 import sys
 
-from google.genai.types import Content, FunctionCall, Part
+from google import genai
+from google.genai.types import Content, FunctionCall, GenerateContentConfig, Part
 
 import config
 from gemini import DEFAULT_MODEL, create_client, make_config, print_metadata
@@ -55,7 +56,7 @@ def main() -> None:
         repl(client, model, config_obj, messages, args.verbose, args.yes)
 
 
-def repl(client, model, config_obj, messages, verbose, auto_confirm):
+def repl(client: genai.Client, model: str, config_obj: GenerateContentConfig, messages: list[Content], verbose: bool, auto_confirm: bool) -> None:
     """Interactive read-eval-print loop.
 
     Each user input becomes a new turn in the same conversation. The shared
@@ -82,7 +83,7 @@ def repl(client, model, config_obj, messages, verbose, auto_confirm):
         agent_loop(client, model, config_obj, messages, verbose, auto_confirm)
 
 
-def agent_loop(client, model, config_obj, messages, verbose, auto_confirm):
+def agent_loop(client: genai.Client, model: str, config_obj: GenerateContentConfig, messages: list[Content], verbose: bool, auto_confirm: bool) -> None:
     """Run the agentic loop for a single user prompt.
 
     Calls the model repeatedly until it produces a final text response

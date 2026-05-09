@@ -6,7 +6,7 @@ from functions.helpers import log_errors, validate_path
 
 
 @log_errors
-def write_file(working_directory, file_path, content):
+def write_file(working_directory: str, file_path: str, content: str) -> str:
     target_path = validate_path(working_directory, file_path)
     if os.path.isdir(target_path):
         raise Exception(f'Cannot write to "{file_path}" as it is a directory')
@@ -33,5 +33,6 @@ schema_write_file = types.FunctionDeclaration(
                 description="File content to write",
             ),
         },
+        required=["file_path", "content"],
     ),
 )

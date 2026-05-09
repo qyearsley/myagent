@@ -1,5 +1,7 @@
 import os
+from collections.abc import Callable
 
+from google.genai import types
 from google.genai.types import Content, Part
 
 import config
@@ -175,7 +177,7 @@ def call_function(function_call, verbose=False, auto_confirm=False):
     )
 
 
-def function_map():
+def function_map() -> dict[str, Callable[..., str]]:
     """Maps function names (as the model knows them) to Python callables."""
     return {
         "edit_file": edit_file,
@@ -188,7 +190,7 @@ def function_map():
     }
 
 
-def list_functions():
+def list_functions() -> list[types.FunctionDeclaration]:
     """Return the schema declarations that tell the model what tools exist.
 
     Each schema describes a function's name, description, and parameter types
