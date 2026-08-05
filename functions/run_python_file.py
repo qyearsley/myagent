@@ -20,7 +20,7 @@ def run_python_file(working_directory: str, file_path: str, args: list[str] | No
     Raises:
         Exception: If the file is not found, not a regular file, or not a Python file.
     """
-    target_path = validate_path(working_directory, file_path)
+    target_path = validate_path(working_directory, file_path, action="run")
     if not os.path.isfile(target_path):
         raise Exception(f'"{file_path}" does not exist or is not a regular file')
     if not target_path.endswith(".py"):

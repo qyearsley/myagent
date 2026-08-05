@@ -14,7 +14,7 @@ def edit_file(working_directory: str, file_path: str, old_string: str, new_strin
     how real coding agents make targeted changes without touching the rest
     of the file.  Errors if old_string is not found or appears more than once.
     """
-    target_path = validate_path(working_directory, file_path)
+    target_path = validate_path(working_directory, file_path, action="edit")
     if not os.path.isfile(target_path):
         raise Exception(f'"{file_path}" does not exist or is not a regular file')
     with open(target_path) as f:

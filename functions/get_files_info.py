@@ -7,7 +7,7 @@ from functions.helpers import log_errors, validate_path
 
 @log_errors
 def get_files_info(working_directory: str, directory: str = ".") -> str:
-    target_dir = validate_path(working_directory, directory)
+    target_dir = validate_path(working_directory, directory, action="list")
     output = "Result for current directory:\n"
     if not os.path.isdir(target_dir):
         raise Exception(f'"{directory}" is not a directory')
@@ -16,7 +16,6 @@ def get_files_info(working_directory: str, directory: str = ".") -> str:
         size = os.path.getsize(path)
         is_dir = os.path.isdir(path)
         output += f" - {item}: file_size={size} bytes, is_dir={is_dir}\n"
-
     return output
 
 

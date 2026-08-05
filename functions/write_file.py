@@ -7,7 +7,7 @@ from functions.helpers import log_errors, validate_path
 
 @log_errors
 def write_file(working_directory: str, file_path: str, content: str) -> str:
-    target_path = validate_path(working_directory, file_path)
+    target_path = validate_path(working_directory, file_path, action="write to")
     if os.path.isdir(target_path):
         raise Exception(f'Cannot write to "{file_path}" as it is a directory')
     # Make sure that all parent directories of the file_path exist.

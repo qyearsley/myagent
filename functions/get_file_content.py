@@ -20,7 +20,7 @@ def get_file_content(working_directory: str, file_path: str) -> str:
     Raises:
         Exception: If the file is not found or is not a regular file.
     """
-    target_path = validate_path(working_directory, file_path)
+    target_path = validate_path(working_directory, file_path, action="read")
     if not os.path.isfile(target_path):
         raise Exception(f'File not found or is not a regular file: "{file_path}"')
     with open(target_path) as f:

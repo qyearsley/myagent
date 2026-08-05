@@ -21,14 +21,18 @@ def log_errors(func):
     return wrapper
 
 
-def validate_path(working_directory, path):
+def validate_path(working_directory, path, action="access"):
     """Resolve path relative to working_directory and verify it stays inside.
-    Returns the resolved absolute path, or raises if it escapes the sandbox."""
+
+    Returns the resolved absolute path, or raises if it escapes the sandbox.
+    `action` is the verb used in the error message, so each tool can phrase the
+    rejection in its own terms ("Cannot list", "Cannot write to", ...).
+    """
     working_dir_abs = os.path.abspath(working_directory)
     target_path = os.path.normpath(os.path.join(working_dir_abs, path))
     if os.path.commonpath([working_dir_abs, target_path]) != working_dir_abs:
         raise Exception(
-            f'Cannot access "{path}" as it is outside the permitted working directory'
+            f'Cannot {action} "{path}" as it is outside the permitted working directory'
         )
     return target_path
 

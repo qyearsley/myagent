@@ -1,5 +1,1 @@
-A poet named Lorem, so grand,
-Wrote verses no one could understand.
-With words long and bold,
-A tale he'd unfold,
-Of gibberish spread through the land.
+lorem ipsum dolor sit amet

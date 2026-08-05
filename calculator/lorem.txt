@@ -1,5 +1,1 @@
-A Lorem Ipsum, quite absurd,
-Whose meaning was utterly blurred.
-It filled up the space,
-With a placeholder grace,
-A nonsensical, jumbled-up word.
+wait, this isn't lorem ipsum
