@@ -31,6 +31,8 @@ The loop runs until the model produces a final text response or hits the iterati
 
 Mutating tools (edit, write, run) require confirmation unless `--yes` is passed. All file tools are sandboxed to the working directory.
 
+`run_bash_command` is the exception: it takes a command string rather than a path, so sandboxing is limited to setting the subprocess `cwd`. The command itself can still reach outside the working directory, which is why confirmation matters for it.
+
 ## Setup
 
 Requires Python 3.13+ and a [Gemini API key](https://aistudio.google.com/apikey).
@@ -62,5 +64,25 @@ pyproject.toml    – Project metadata and dependencies
 functions/        – Tool implementations
   helpers.py      – Path validation, subprocess runner, error handling
   search_files.py, get_file_content.py, edit_file.py, ...
+tests/            – Unit tests (see Development below)
 calculator/       – Sample project the agent can work on
 ```
+
+## Development
+
+```bash
+uv run pytest        # Run tests
+uv run ruff check .  # Lint
+uv run ruff format . # Format
+```
+
+[`tests/`](tests/) covers the sandbox boundary in
+[`test_sandbox.py`](tests/test_sandbox.py) — path traversal, absolute paths,
+symlinks out of the working directory, and name-prefix collisions, both directly
+against `validate_path` and through each tool — plus the file tools' contracts
+(`edit_file`'s exactly-one-occurrence rule, `get_file_content` truncation,
+`search_files` pruning and result cap).
+
+The `test_*.py` scripts at the repo root and in `calculator/` are boot.dev
+exercise drivers that print output rather than assert. They're kept as they were
+written and excluded from collection via `testpaths` in `pyproject.toml`.

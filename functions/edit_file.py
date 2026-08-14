@@ -23,9 +23,7 @@ def edit_file(working_directory: str, file_path: str, old_string: str, new_strin
     if count == 0:
         raise Exception(f"old_string not found in {file_path}")
     if count > 1:
-        raise Exception(
-            f"old_string appears {count} times in {file_path} — must be unique"
-        )
+        raise Exception(f"old_string appears {count} times in {file_path} — must be unique")
     new_content = content.replace(old_string, new_string, 1)
     with open(target_path, "w") as f:
         f.write(new_content)

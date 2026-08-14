@@ -8,3 +8,45 @@ dependencies = [
     "google-genai==1.12.1",
     "python-dotenv==1.1.0",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.8.0",
+]
+
+[tool.pytest.ini_options]
+# Only tests/ is collected. The `test_*.py` scripts at the repo root and in
+# calculator/ are boot.dev exercise drivers that print output rather than
+# assert, so they are deliberately excluded.
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+# The boot.dev exercise drivers and their sample project are kept exactly as
+# they were written, so neither the linter nor the formatter touches them.
+extend-exclude = [
+    "test_*.py",
+    "calculator",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["config", "functions", "prompts"]
+force-sort-within-sections = true

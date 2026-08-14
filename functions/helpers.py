@@ -1,6 +1,7 @@
 # NOTE: Each tool function validates that file paths stay within the sandbox
 # working directory using os.path.commonpath. This prevents the model from
-# accessing files outside the permitted area via path traversal (e.g. "../../").
+# accessing files outside the permitted area via path traversal (e.g. "../../")
+# or via a symlink inside the working directory that points outside it.
 
 import functools
 import os
@@ -27,9 +28,15 @@ def validate_path(working_directory, path, action="access"):
     Returns the resolved absolute path, or raises if it escapes the sandbox.
     `action` is the verb used in the error message, so each tool can phrase the
     rejection in its own terms ("Cannot list", "Cannot write to", ...).
+
+    Both sides are resolved with realpath so that symlinks are followed before
+    the comparison. Using abspath/normpath here would let a symlink inside the
+    working directory point outside it and slip past the check -- normpath is
+    pure string manipulation and knows nothing about links. realpath also
+    resolves paths that don't exist yet, which write_file relies on.
     """
-    working_dir_abs = os.path.abspath(working_directory)
-    target_path = os.path.normpath(os.path.join(working_dir_abs, path))
+    working_dir_abs = os.path.realpath(working_directory)
+    target_path = os.path.realpath(os.path.join(working_dir_abs, path))
     if os.path.commonpath([working_dir_abs, target_path]) != working_dir_abs:
         raise Exception(
             f'Cannot {action} "{path}" as it is outside the permitted working directory'

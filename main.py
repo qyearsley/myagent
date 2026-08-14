@@ -17,9 +17,9 @@ import sys
 from google import genai
 from google.genai.types import Content, FunctionCall, GenerateContentConfig, Part
 
+from call_function import call_function
 import config
 from gemini import DEFAULT_MODEL, create_client, make_config, print_metadata
-from call_function import call_function
 
 
 def main() -> None:
@@ -56,7 +56,14 @@ def main() -> None:
         repl(client, model, config_obj, messages, args.verbose, args.yes)
 
 
-def repl(client: genai.Client, model: str, config_obj: GenerateContentConfig, messages: list[Content], verbose: bool, auto_confirm: bool) -> None:
+def repl(
+    client: genai.Client,
+    model: str,
+    config_obj: GenerateContentConfig,
+    messages: list[Content],
+    verbose: bool,
+    auto_confirm: bool,
+) -> None:
     """Interactive read-eval-print loop.
 
     Each user input becomes a new turn in the same conversation. The shared
@@ -83,7 +90,14 @@ def repl(client: genai.Client, model: str, config_obj: GenerateContentConfig, me
         agent_loop(client, model, config_obj, messages, verbose, auto_confirm)
 
 
-def agent_loop(client: genai.Client, model: str, config_obj: GenerateContentConfig, messages: list[Content], verbose: bool, auto_confirm: bool) -> None:
+def agent_loop(
+    client: genai.Client,
+    model: str,
+    config_obj: GenerateContentConfig,
+    messages: list[Content],
+    verbose: bool,
+    auto_confirm: bool,
+) -> None:
     """Run the agentic loop for a single user prompt.
 
     Calls the model repeatedly until it produces a final text response
@@ -92,12 +106,8 @@ def agent_loop(client: genai.Client, model: str, config_obj: GenerateContentConf
     """
     for iteration in range(1, config.MAX_ITERATIONS + 1):
         if verbose:
-            print(
-                f"[Iteration {iteration}/{config.MAX_ITERATIONS}, {len(messages)} messages]"
-            )
-        response = client.models.generate_content(
-            model=model, contents=messages, config=config_obj
-        )
+            print(f"[Iteration {iteration}/{config.MAX_ITERATIONS}, {len(messages)} messages]")
+        response = client.models.generate_content(model=model, contents=messages, config=config_obj)
         if not response:
             raise RuntimeError("generate_content returned no response")
         if verbose:

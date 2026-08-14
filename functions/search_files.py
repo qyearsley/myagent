@@ -21,15 +21,18 @@ def search_files(working_directory: str, pattern: str, path: str = ".") -> str:
     if not os.path.isdir(search_dir):
         raise Exception(f'"{path}" is not a directory')
 
+    # Match validate_path's resolution so reported paths stay relative to the
+    # working directory even when it sits behind a symlink (e.g. /tmp on macOS).
+    working_dir_abs = os.path.realpath(working_directory)
     results = []
     for root, dirs, files in os.walk(search_dir):
         # Prune noisy directories in-place so os.walk skips them.
         dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
         for filename in sorted(files):
             filepath = os.path.join(root, filename)
-            rel_path = os.path.relpath(filepath, os.path.abspath(working_directory))
+            rel_path = os.path.relpath(filepath, working_dir_abs)
             try:
-                with open(filepath, "r") as f:
+                with open(filepath) as f:
                     for line_num, line in enumerate(f, 1):
                         if pattern in line:
                             results.append(f"{rel_path}:{line_num}:{line.rstrip()}")

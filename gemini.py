@@ -12,8 +12,8 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai.types import GenerateContentConfig, GenerateContentResponse, Tool
 
-import prompts
 from call_function import list_functions
+import prompts
 
 DEFAULT_MODEL = "gemini-2.5-flash"
 
